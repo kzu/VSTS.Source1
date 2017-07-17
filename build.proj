@@ -1,0 +1,9 @@
+<Project DefaultTargets="Build" TreatAsLocalProperty="Configuration">
+
+	<Target Name="Build" />
+
+	<Target Name="Clean" />
+
+	<Target Name="Rebuild" DependsOnTargets="Clean;Build" />
+
+</Project>
