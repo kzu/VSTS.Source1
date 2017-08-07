@@ -1,9 +1,33 @@
 <Project DefaultTargets="Build" TreatAsLocalProperty="Configuration">
 
-	<Target Name="Build" />
+  <Target Name="Build">
+    <Dump />
+  </Target>
 
-	<Target Name="Clean" />
+  <Target Name="Clean" />
 
-	<Target Name="Rebuild" DependsOnTargets="Clean;Build" />
+  <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
 
+  <UsingTask TaskName="Dump" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll">
+    <Task>
+      <Reference Include="Microsoft.Build" />
+      <Reference Include="Microsoft.CSharp" />
+      <Reference Include="System" />
+      <Reference Include="System.Core" />
+      <Using Namespace="System" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="Microsoft.Build.Framework" />
+      <Using Namespace="Microsoft.Build.Utilities" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+            Log.LogMessage(MessageImportance.High, GetMessage("Foo={0}, Bar={1}", "foo", "bar"));
+
+            string GetMessage(string message, params string[] args)
+            {
+                return "Message: " + string.Format(message, args);
+            }
+        ]]>
+      </Code>
+    </Task>
+  </UsingTask>
 </Project>
