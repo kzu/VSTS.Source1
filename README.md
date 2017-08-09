@@ -2,4 +2,8 @@
 
 VSTS depent build spike
 
-CI build and release
+Testing PS on Mac
+
+Testing manual PR branch build
+
+CI build > release from PR test
