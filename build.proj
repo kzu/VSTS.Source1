@@ -13,8 +13,8 @@
 
   <Target Name="Build">
     <Message Importance="high" Text="##vso[build.updatebuildnumber]$(GitBranch)-$(GitCommit) ($(BUILD_BUILDID))" />
-    <Message Importance="high" Text="##vso[task.addattachment type=binlog;name=build;]$(Build.SourcesDirectory)\build.binlog" />
-    <Message Importance="high" Text="##vso[task.uploadfile]$(Build.SourcesDirectory)\build.binlog" />
+    <Message Importance="high" Text="##vso[task.addattachment type=binlog;name=build;]$(BUILD_SOURCESDIRECTORY)\build.binlog" />
+    <Message Importance="high" Text="##vso[task.uploadfile]$(BUILD_SOURCESDIRECTORY)\build.binlog" />
   </Target>  
 
   <Target Name="Clean" />
