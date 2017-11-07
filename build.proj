@@ -1,33 +1,23 @@
-<Project DefaultTargets="Build" TreatAsLocalProperty="Configuration">
+<Project>
+  <PropertyGroup>
+    <CI Condition="'$(CI)' == '' and '$(TF_BUILD)' == 'true'">true</CI>
+    <PR Condition="'$(PR)' == '' and '$(BUILD_BUILDREASON)' == 'PullRequest'">true</PR>
+    <PR Condition="'$(PR)' == '' and $([System.Text.RegularExpressions.Regex]::IsMatch('$(BUILD_SOURCEBRANCH)', 'refs/pull/\d+/merge'))">true</PR>
+
+    <GitBranch Condition="'$(PR)' == 'true'">$([System.Text.RegularExpressions.Regex]::Match($(BUILD_SOURCEBRANCH), '(?&lt;=refs/pull/)\d+(?=/merge)'))</GitBranch>
+    <GitBranch Condition="'$(GitBranch)' != ''">pr$(GitBranch)</GitBranch>
+    <GitBranch Condition="'$(GitBranch)' == ''">$(BUILD_SOURCEBRANCHNAME)</GitBranch>
+    <GitSha>$(BUILD_SOURCEVERSION)</GitSha>
+    <GitCommit Condition="'$(GitSha)' != ''">$(GitSha.Substring(0, 7))</GitCommit>
+  </PropertyGroup>
 
   <Target Name="Build">
-    <Dump />
-  </Target>
+    <Message Importance="high" Text="##vso[build.updatebuildnumber]$(GitBranch)-$(GitCommit) ($(BUILD_BUILDID))" />
+    <Message Importance="high" Text="##vso[task.addattachment type=binlog;name=build;]$(BUILD_SOURCESDIRECTORY)\build.binlog" />
+    <Message Importance="high" Text="##vso[task.uploadfile]$(BUILD_SOURCESDIRECTORY)\build.binlog" />
+  </Target>  
 
   <Target Name="Clean" />
 
   <Target Name="Rebuild" DependsOnTargets="Clean;Build" />
-
-  <UsingTask TaskName="Dump" TaskFactory="CodeTaskFactory" AssemblyFile="$(MSBuildBinPath)\Microsoft.Build.Tasks.v4.0.dll">
-    <Task>
-      <Reference Include="Microsoft.Build" />
-      <Reference Include="Microsoft.CSharp" />
-      <Reference Include="System" />
-      <Reference Include="System.Core" />
-      <Using Namespace="System" />
-      <Using Namespace="System.Linq" />
-      <Using Namespace="Microsoft.Build.Framework" />
-      <Using Namespace="Microsoft.Build.Utilities" />
-      <Code Type="Fragment" Language="cs">
-        <![CDATA[
-            Log.LogMessage(MessageImportance.High, GetMessage("Foo={0}, Bar={1}", "foo", "bar"));
-
-            string GetMessage(string message, params string[] args)
-            {
-                return "Message: " + string.Format(message, args);
-            }
-        ]]>
-      </Code>
-    </Task>
-  </UsingTask>
 </Project>
